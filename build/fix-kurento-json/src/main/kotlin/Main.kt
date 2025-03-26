@@ -12,14 +12,14 @@ fun main(args: Array<String>) {
     val cwd = Paths.get("").toAbsolutePath()
     println("Working Directory = $cwd")
 
-    val input1 = cwd.resolve("../kms-elements/src/server/interface").normalize()
+    val input1 = cwd.resolve("../kurento/server/module-elements/src/server/interface").normalize()
     println("Search Directory = $input1")
 
     val output1 = cwd.resolve("../kms-elements-valid-json").normalize()
 
     fixFiles(input1, output1)
 
-    val input2 = cwd.resolve("../kms-core/src/server/interface/core.kmd.json").normalize()
+    val input2 = cwd.resolve("../kurento/server/module-core/src/server/interface/core.kmd.json").normalize()
     println("Search Directory = $input2")
 
     val output2 = cwd.resolve("../kms-core-valid-json").normalize()

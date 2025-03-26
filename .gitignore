@@ -1,6 +1,5 @@
 build/fix-kurento-json/.gradle
 build/fix-kurento-json/build
-build/kms-core/
+build/kurento/
 build/kms-core-valid-json/*.json
-build/kms-elements/
 build/kms-elements-valid-json/*.json

@@ -383,10 +383,9 @@ func main() {
 	}
 
 	// copy LICENSE and NOTICE
-	// We use the ones from kms-core, but the ones from kms-elements are identical
 	// NOTE: This code is only OK because these are small files. For large files,
 	// this would be a very bad idea.
-	license, err := os.ReadFile("build/kms-core/LICENSE")
+	license, err := os.ReadFile("build/kurento/LICENSE")
 	if err != nil {
 		log.Fatalf("error reading LICENSE file: %s\n", err)
 	}
@@ -394,7 +393,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("error writing LICENSE file: %s\n", err)
 	}
-	notice, err := os.ReadFile("build/kms-core/NOTICE")
+	notice, err := os.ReadFile("build/kurento/NOTICE")
 	if err != nil {
 		log.Fatalf("error reading NOTICE file: %s\n", err)
 	}
