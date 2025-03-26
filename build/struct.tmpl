@@ -32,6 +32,19 @@ func ({{.Name}}_builder) GetTypeName() string {
 	return "{{.Name}}"
 }
 
+{{ if eq .Name "MediaPipeline" }}
+// NewMediaPipeline creates a new MediaPipeline object on the Kurento server.
+// All other media objects are created as descendents of MediaPipeline objects,
+// but there needs to be an explicit way to create the top-level MediaPipeline.
+func NewMediaPipeline(ctx context.Context, connection *kurento.Client) (*MediaPipeline, error) {
+	elem := &MediaObject{}
+	elem.setConnection(connection)
+	mp := &MediaPipeline{}
+	err := elem.Create(ctx, mp, nil)
+	return mp, err
+}
+{{ end }}
+
 {{ range .Methods }}
 type {{$name}}{{ .Name | title }}Params struct {
 	{{ range $i, $e := .Params }}{{ $e.name | title }} {{ checkElement $.Package $e.type }} `json:"{{ $e.name | title }}"`

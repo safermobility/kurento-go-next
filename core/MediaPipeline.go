@@ -31,6 +31,17 @@ func (MediaPipeline_builder) GetTypeName() string {
 	return "MediaPipeline"
 }
 
+// NewMediaPipeline creates a new MediaPipeline object on the Kurento server.
+// All other media objects are created as descendents of MediaPipeline objects,
+// but there needs to be an explicit way to create the top-level MediaPipeline.
+func NewMediaPipeline(ctx context.Context, connection *kurento.Client) (*MediaPipeline, error) {
+	elem := &MediaObject{}
+	elem.setConnection(connection)
+	mp := &MediaPipeline{}
+	err := elem.Create(ctx, mp, nil)
+	return mp, err
+}
+
 type MediaPipelineGetGstreamerDotParams struct {
 	Details GstreamerDotDetails `json:"Details"`
 }
