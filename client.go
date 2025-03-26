@@ -1,7 +1,7 @@
 package kurento
 
 //go:generate go run build/build.go
-//go:generate goimports -w core elements
+//go:generate go tool goimports -w core elements
 
 import (
 	"context"
