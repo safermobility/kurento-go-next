@@ -1,4 +1,4 @@
-module github.com/safermobility/kurento-go-next
+module github.com/safermobility/kurento-go-next/v6
 
 go 1.24.0
 
