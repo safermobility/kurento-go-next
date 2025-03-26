@@ -13,5 +13,6 @@ func (t AudioCodec) String() string {
 const (
 	AUDIOCODEC_OPUS AudioCodec = "OPUS"
 	AUDIOCODEC_PCMU AudioCodec = "PCMU"
+	AUDIOCODEC_PCMA AudioCodec = "PCMA"
 	AUDIOCODEC_RAW  AudioCodec = "RAW"
 )

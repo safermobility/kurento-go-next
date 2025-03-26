@@ -16,6 +16,7 @@ type IMediaElement interface {
 	Disconnect(context.Context, *MediaElementDisconnectParams) error
 	SetAudioFormat(context.Context, *MediaElementSetAudioFormatParams) error
 	SetVideoFormat(context.Context, *MediaElementSetVideoFormatParams) error
+	DumpGstreamerDot(context.Context, *MediaElementDumpGstreamerDotParams) error
 	GetGstreamerDot(context.Context, *MediaElementGetGstreamerDotParams) (string, error)
 	GetStats(context.Context, *MediaElementGetStatsParams) (map[string]Stats, error)
 	IsMediaFlowingIn(context.Context, *MediaElementIsMediaFlowingInParams) (bool, error)
@@ -334,6 +335,37 @@ func (MediaElementSetVideoFormatParams) OperationName() string {
 // useful.
 // </p>
 func (elem *MediaElement) SetVideoFormat(ctx context.Context, params *MediaElementSetVideoFormatParams) error {
+	request := kurento.BuildInvoke(elem.Id, params)
+
+	// Returns error or nil
+	_, err := kurento.CallSimple[any](ctx, elem.GetConnection(), request)
+	if err != nil {
+		return fmt.Errorf("rpc error: %w", err)
+	}
+	return nil
+
+}
+
+type MediaElementDumpGstreamerDotParams struct {
+	Details GstreamerDotDetails `json:"Details"`
+}
+
+func (MediaElementDumpGstreamerDotParams) OperationName() string {
+	return "dumpGstreamerDot"
+}
+
+// If GST_DEBUG_DUMP_DOT_DIR  environment variable is defined dumps in that directoy a file with the GStreamer dot of the Media Element.
+// <p>The element can be queried for certain type of data:</p>
+// <ul>
+// <li>SHOW_ALL: default value</li>
+// <li>SHOW_CAPS_DETAILS</li>
+// <li>SHOW_FULL_PARAMS</li>
+// <li>SHOW_MEDIA_TYPE</li>
+// <li>SHOW_NON_DEFAULT_PARAMS</li>
+// <li>SHOW_STATES</li>
+// <li>SHOW_VERBOSE</li>
+// </ul>
+func (elem *MediaElement) DumpGstreamerDot(ctx context.Context, params *MediaElementDumpGstreamerDotParams) error {
 	request := kurento.BuildInvoke(elem.Id, params)
 
 	// Returns error or nil

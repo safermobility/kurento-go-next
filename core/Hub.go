@@ -11,6 +11,7 @@ import (
 
 type IHub interface {
 	GetGstreamerDot(context.Context, *HubGetGstreamerDotParams) (string, error)
+	DumpGstreamerDot(context.Context, *HubDumpGstreamerDotParams) error
 }
 
 // A Hub is a routing `MediaObject`.
@@ -48,5 +49,36 @@ func (elem *Hub) GetGstreamerDot(ctx context.Context, params *HubGetGstreamerDot
 		err = fmt.Errorf("rpc error: %w", err)
 	}
 	return value, err
+
+}
+
+type HubDumpGstreamerDotParams struct {
+	Details GstreamerDotDetails `json:"Details"`
+}
+
+func (HubDumpGstreamerDotParams) OperationName() string {
+	return "dumpGstreamerDot"
+}
+
+// If GST_DEBUG_DUMP_DOT_DIR  environment variable is defined dumps in that directoy a file with the GStreamer dot of the Hub.
+// <p>The element can be queried for certain type of data:</p>
+// <ul>
+// <li>SHOW_ALL: default value</li>
+// <li>SHOW_CAPS_DETAILS</li>
+// <li>SHOW_FULL_PARAMS</li>
+// <li>SHOW_MEDIA_TYPE</li>
+// <li>SHOW_NON_DEFAULT_PARAMS</li>
+// <li>SHOW_STATES</li>
+// <li>SHOW_VERBOSE</li>
+// </ul>
+func (elem *Hub) DumpGstreamerDot(ctx context.Context, params *HubDumpGstreamerDotParams) error {
+	request := kurento.BuildInvoke(elem.Id, params)
+
+	// Returns error or nil
+	_, err := kurento.CallSimple[any](ctx, elem.GetConnection(), request)
+	if err != nil {
+		return fmt.Errorf("rpc error: %w", err)
+	}
+	return nil
 
 }

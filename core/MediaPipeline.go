@@ -11,6 +11,7 @@ import (
 
 type IMediaPipeline interface {
 	GetGstreamerDot(context.Context, *MediaPipelineGetGstreamerDotParams) (string, error)
+	DumpGstreamerDot(context.Context, *MediaPipelineDumpGstreamerDotParams) error
 }
 
 // A pipeline is a container for a collection of `MediaElements<MediaElement>`.
@@ -62,5 +63,26 @@ func (elem *MediaPipeline) GetGstreamerDot(ctx context.Context, params *MediaPip
 		err = fmt.Errorf("rpc error: %w", err)
 	}
 	return value, err
+
+}
+
+type MediaPipelineDumpGstreamerDotParams struct {
+	Details GstreamerDotDetails `json:"Details"`
+}
+
+func (MediaPipelineDumpGstreamerDotParams) OperationName() string {
+	return "dumpGstreamerDot"
+}
+
+// If GST_DEBUG_DUMP_DOT_DIR  environment variable is defined dumps in that directoy a file with the GStreamer dot of the pipeline
+func (elem *MediaPipeline) DumpGstreamerDot(ctx context.Context, params *MediaPipelineDumpGstreamerDotParams) error {
+	request := kurento.BuildInvoke(elem.Id, params)
+
+	// Returns error or nil
+	_, err := kurento.CallSimple[any](ctx, elem.GetConnection(), request)
+	if err != nil {
+		return fmt.Errorf("rpc error: %w", err)
+	}
+	return nil
 
 }
