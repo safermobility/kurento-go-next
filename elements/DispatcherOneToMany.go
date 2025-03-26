@@ -11,8 +11,8 @@ import (
 )
 
 type IDispatcherOneToMany interface {
-	SetSource(source core.HubPort) error
-	RemoveSource() error
+	SetSource(context.Context, *DispatcherOneToManySetSourceParams) error
+	RemoveSource(context.Context) error
 }
 
 // A `Hub` that sends a given source to all the connected sinks

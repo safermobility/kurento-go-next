@@ -11,8 +11,8 @@ import (
 )
 
 type IRecorderEndpoint interface {
-	Record() error
-	StopAndWait() error
+	Record(context.Context) error
+	StopAndWait(context.Context) error
 }
 
 // Provides functionality to store media contents.

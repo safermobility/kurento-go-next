@@ -10,18 +10,18 @@ import (
 )
 
 type IMediaElement interface {
-	GetSourceConnections(mediaType MediaType, description string) ([]ElementConnectionData, error)
-	GetSinkConnections(mediaType MediaType, description string) ([]ElementConnectionData, error)
-	Connect(sink IMediaElement, mediaType MediaType, sourceMediaDescription string, sinkMediaDescription string) error
-	Disconnect(sink IMediaElement, mediaType MediaType, sourceMediaDescription string, sinkMediaDescription string) error
-	SetAudioFormat(caps AudioCaps) error
-	SetVideoFormat(caps VideoCaps) error
-	GetGstreamerDot(details GstreamerDotDetails) (string, error)
-	SetOutputBitrate(bitrate int) error
-	GetStats(mediaType MediaType) (map[string]Stats, error)
-	IsMediaFlowingIn(mediaType MediaType, sinkMediaDescription string) (bool, error)
-	IsMediaFlowingOut(mediaType MediaType, sourceMediaDescription string) (bool, error)
-	IsMediaTranscoding(mediaType MediaType, binName string) (bool, error)
+	GetSourceConnections(context.Context, *MediaElementGetSourceConnectionsParams) ([]ElementConnectionData, error)
+	GetSinkConnections(context.Context, *MediaElementGetSinkConnectionsParams) ([]ElementConnectionData, error)
+	Connect(context.Context, *MediaElementConnectParams) error
+	Disconnect(context.Context, *MediaElementDisconnectParams) error
+	SetAudioFormat(context.Context, *MediaElementSetAudioFormatParams) error
+	SetVideoFormat(context.Context, *MediaElementSetVideoFormatParams) error
+	GetGstreamerDot(context.Context, *MediaElementGetGstreamerDotParams) (string, error)
+	SetOutputBitrate(context.Context, *MediaElementSetOutputBitrateParams) error
+	GetStats(context.Context, *MediaElementGetStatsParams) (map[string]Stats, error)
+	IsMediaFlowingIn(context.Context, *MediaElementIsMediaFlowingInParams) (bool, error)
+	IsMediaFlowingOut(context.Context, *MediaElementIsMediaFlowingOutParams) (bool, error)
+	IsMediaTranscoding(context.Context, *MediaElementIsMediaTranscodingParams) (bool, error)
 }
 
 // The basic building block of the media server, that can be interconnected inside a pipeline.

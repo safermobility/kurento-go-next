@@ -11,7 +11,7 @@ import (
 )
 
 type IHttpEndpoint interface {
-	GetUrl() (string, error)
+	GetUrl(context.Context) (string, error)
 }
 
 // Endpoint that enables Kurento to work as an HTTP server, allowing peer HTTP clients to access media.

@@ -10,7 +10,7 @@ import (
 )
 
 type IHub interface {
-	GetGstreamerDot(details GstreamerDotDetails) (string, error)
+	GetGstreamerDot(context.Context, *HubGetGstreamerDotParams) (string, error)
 }
 
 // A Hub is a routing `MediaObject`.

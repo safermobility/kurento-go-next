@@ -7,7 +7,7 @@ package {{ .Package }}
 {{/* Generate interface then struct */}}
 {{ if ne .Name "MediaObject" }}
 type I{{ .Name }} interface {
-	{{ range .Methods }}{{.Name | title }}({{ range $i, $e := .Params }}{{ if $i }}, {{ end }} {{ $e.name }} {{ checkElement $.Package $e.type }}{{ end }})({{ if .Return.type}}{{.Return.type}},{{end}} error)
+	{{ range .Methods }}{{.Name | title }}(context.Context{{ if .Params }}, *{{$name}}{{ .Name | title }}Params{{ end }})({{ if .Return.type}}{{.Return.type}},{{end}} error)
 	{{end}}
 }
 {{ end }}

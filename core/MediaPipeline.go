@@ -10,7 +10,7 @@ import (
 )
 
 type IMediaPipeline interface {
-	GetGstreamerDot(details GstreamerDotDetails) (string, error)
+	GetGstreamerDot(context.Context, *MediaPipelineGetGstreamerDotParams) (string, error)
 }
 
 // A pipeline is a container for a collection of `MediaElements<MediaElement>` and `MediaMixers<MediaMixer>`.

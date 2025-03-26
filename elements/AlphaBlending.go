@@ -11,8 +11,8 @@ import (
 )
 
 type IAlphaBlending interface {
-	SetMaster(source core.HubPort, zOrder int) error
-	SetPortProperties(relativeX float64, relativeY float64, zOrder int, relativeWidth float64, relativeHeight float64, port core.HubPort) error
+	SetMaster(context.Context, *AlphaBlendingSetMasterParams) error
+	SetPortProperties(context.Context, *AlphaBlendingSetPortPropertiesParams) error
 }
 
 // A `Hub` that mixes the :rom:attr:`MediaType.AUDIO` stream of its connected sources and constructs one output with :rom:attr:`MediaType.VIDEO` streams of its connected sources into its sink

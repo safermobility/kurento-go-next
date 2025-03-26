@@ -10,8 +10,8 @@ import (
 )
 
 type IUriEndpoint interface {
-	Pause() error
-	Stop() error
+	Pause(context.Context) error
+	Stop(context.Context) error
 }
 
 // Interface for endpoints the require a URI to work.

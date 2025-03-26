@@ -10,11 +10,11 @@ import (
 )
 
 type ISdpEndpoint interface {
-	GenerateOffer(options OfferOptions) (string, error)
-	ProcessOffer(offer string) (string, error)
-	ProcessAnswer(answer string) (string, error)
-	GetLocalSessionDescriptor() (string, error)
-	GetRemoteSessionDescriptor() (string, error)
+	GenerateOffer(context.Context, *SdpEndpointGenerateOfferParams) (string, error)
+	ProcessOffer(context.Context, *SdpEndpointProcessOfferParams) (string, error)
+	ProcessAnswer(context.Context, *SdpEndpointProcessAnswerParams) (string, error)
+	GetLocalSessionDescriptor(context.Context) (string, error)
+	GetRemoteSessionDescriptor(context.Context) (string, error)
 }
 
 // Interface implemented by Endpoints that require an SDP Offer/Answer negotiation in order to configure a media session.

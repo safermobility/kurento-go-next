@@ -11,8 +11,8 @@ import (
 )
 
 type IMixer interface {
-	Connect(media core.MediaType, source core.HubPort, sink core.HubPort) error
-	Disconnect(media core.MediaType, source core.HubPort, sink core.HubPort) error
+	Connect(context.Context, *MixerConnectParams) error
+	Disconnect(context.Context, *MixerDisconnectParams) error
 }
 
 // A `Hub` that allows routing of video between arbitrary port pairs and mixing of audio among several ports

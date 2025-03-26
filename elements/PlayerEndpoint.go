@@ -11,7 +11,7 @@ import (
 )
 
 type IPlayerEndpoint interface {
-	Play() error
+	Play(context.Context) error
 }
 
 // Retrieves content from external sources.

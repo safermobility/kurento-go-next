@@ -10,10 +10,10 @@ import (
 )
 
 type IServerManager interface {
-	GetKmd(moduleName string) (string, error)
-	GetCpuCount() (int, error)
-	GetUsedCpu(interval int) (float64, error)
-	GetUsedMemory() (int64, error)
+	GetKmd(context.Context, *ServerManagerGetKmdParams) (string, error)
+	GetCpuCount(context.Context) (int, error)
+	GetUsedCpu(context.Context, *ServerManagerGetUsedCpuParams) (float64, error)
+	GetUsedMemory(context.Context) (int64, error)
 }
 
 // This is a standalone object for managing the MediaServer

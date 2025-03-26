@@ -11,10 +11,10 @@ import (
 )
 
 type IWebRtcEndpoint interface {
-	GatherCandidates() error
-	AddIceCandidate(candidate IceCandidate) error
-	CreateDataChannel(label string, ordered bool, maxPacketLifeTime int, maxRetransmits int, protocol string) error
-	CloseDataChannel(channelId int) error
+	GatherCandidates(context.Context) error
+	AddIceCandidate(context.Context, *WebRtcEndpointAddIceCandidateParams) error
+	CreateDataChannel(context.Context, *WebRtcEndpointCreateDataChannelParams) error
+	CloseDataChannel(context.Context, *WebRtcEndpointCloseDataChannelParams) error
 }
 
 // Control interface for Kurento WebRTC endpoint.

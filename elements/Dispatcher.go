@@ -11,7 +11,7 @@ import (
 )
 
 type IDispatcher interface {
-	Connect(source core.HubPort, sink core.HubPort) error
+	Connect(context.Context, *DispatcherConnectParams) error
 }
 
 // A `Hub` that allows routing between arbitrary port pairs
