@@ -17,7 +17,6 @@ type IMediaElement interface {
 	SetAudioFormat(context.Context, *MediaElementSetAudioFormatParams) error
 	SetVideoFormat(context.Context, *MediaElementSetVideoFormatParams) error
 	GetGstreamerDot(context.Context, *MediaElementGetGstreamerDotParams) (string, error)
-	SetOutputBitrate(context.Context, *MediaElementSetOutputBitrateParams) error
 	GetStats(context.Context, *MediaElementGetStatsParams) (map[string]Stats, error)
 	IsMediaFlowingIn(context.Context, *MediaElementIsMediaFlowingInParams) (bool, error)
 	IsMediaFlowingOut(context.Context, *MediaElementIsMediaFlowingOutParams) (bool, error)
@@ -57,30 +56,90 @@ type IMediaElement interface {
 type MediaElement struct {
 	MediaObject
 
-	// Minimum video bandwidth for transcoding.
-	// @deprecated Deprecated due to a typo. Use :rom:meth:`minOutputBitrate` instead of this function.
-	MinOuputBitrate int
+	// Target video bitrate for media transcoding.
+	// <p>
+	// The bitrate of a video has a direct impact on its perceived image quality.
+	// Higher bitrate means higher quality, but also a larger amount of bytes to
+	// transmit or store. Use this parameter to set the desired average bitrate in
+	// videos that are transcoded by the media server.
+	// </p>
+	// <p>
+	// This parameter is most useful for `RecorderEndpoint` and
+	// `RtpEndpoint`: when media is being transcoded (either for streaming
+	// or storing on disk), the resulting quality is directly controlled with this
+	// value.
+	// </p>
+	// <p>
+	// For `WebRtcEndpoint`, this value should be left as default, as remote
+	// WebRTC receivers will already send feedback to inform the media server about
+	// what is the optimal bitrate to send.
+	// </p>
+	// <p>
+	// Setting a value will only work if done before the media starts to flow.
+	// </p>
+	// <ul>
+	// <li>Unit: bps (bits per second).</li>
+	// <li>Default: 300000 (300 kbps).</li>
+	// </ul>
+	//
+	EncoderBitrate int
 
-	// Minimum video bitrate for transcoding.
+	// Minimum video bitrate for media transcoding.
+	// <p>
+	// This parameter can be used to fine tune the automatic bitrate selection that
+	// normally takes place within elements that are able to dynamically change the
+	// encoding bitrate according to the conditions of the streaming, such as
+	// `WebRtcEndpoint`.
+	// </p>
+	// <p>
+	// This should be left as default in most cases, given that remote WebRTC
+	// receivers already send feedback to inform the media server about what is the
+	// optimal bitrate to send. Otherwise, this parameter could be used for example
+	// to force a higher bitrate than what is being requested by receivers.
+	// </p>
+	// <p>
+	// Setting a value will only work if done before the media starts to flow.
+	// </p>
 	// <ul>
 	// <li>Unit: bps (bits per second).</li>
 	// <li>Default: 0.</li>
 	// </ul>
 	//
-	MinOutputBitrate int
+	MinEncoderBitrate int
 
-	// Maximum video bandwidth for transcoding.
-	// @deprecated Deprecated due to a typo. Use :rom:meth:`maxOutputBitrate` instead of this function.
-	MaxOuputBitrate int
-
-	// Maximum video bitrate for transcoding.
+	// Maximum video bitrate for media transcoding.
+	// <p>
+	// This parameter can be used to fine tune the automatic bitrate selection that
+	// normally takes place within elements that are able to dynamically change the
+	// encoding bitrate according to the conditions of the streaming, such as
+	// `WebRtcEndpoint`.
+	// </p>
+	// <p>
+	// This should be left as default in most cases, given that remote WebRTC
+	// receivers already send feedback to inform the media server about what is the
+	// optimal bitrate to send. Otherwise, this parameter could be used for example
+	// to limit the total bitrate that is handled by the server, by setting a low
+	// maximum output for all endpoints.
+	// </p>
+	// <p>
+	// This should be left as default in most cases, given that remote WebRTC
+	// receivers already send feedback to inform the media server about what is the
+	// optimal bitrate to send. Otherwise, this parameter could be used for example
+	// to limit the total bitrate that is handled by the server, by setting a low
+	// maximum output for all endpoints.
+	// </p>
+	// <p>
+	// Setting a value will only work if done before the media starts to flow.
+	// </p>
 	// <ul>
 	// <li>Unit: bps (bits per second).</li>
-	// <li>Default: MAXINT.</li>
-	// <li>0 = unlimited.</li>
+	// <li>Default: 0.</li>
+	// <li>
+	// 0 = unlimited. Encoding performed with bitrate as requested by receivers.
+	// </li>
 	// </ul>
 	//
-	MaxOutputBitrate int
+	MaxEncoderBitrate int
 }
 
 type MediaElement_builder struct {
@@ -317,28 +376,6 @@ func (elem *MediaElement) GetGstreamerDot(ctx context.Context, params *MediaElem
 		err = fmt.Errorf("rpc error: %w", err)
 	}
 	return value, err
-
-}
-
-type MediaElementSetOutputBitrateParams struct {
-	Bitrate int `json:"Bitrate"`
-}
-
-func (MediaElementSetOutputBitrateParams) OperationName() string {
-	return "setOutputBitrate"
-}
-
-// @deprecated
-// Allows change the target bitrate for the media output, if the media is encoded using VP8 or H264. This method only works if it is called before the media starts to flow.
-func (elem *MediaElement) SetOutputBitrate(ctx context.Context, params *MediaElementSetOutputBitrateParams) error {
-	request := kurento.BuildInvoke(elem.Id, params)
-
-	// Returns error or nil
-	_, err := kurento.CallSimple[any](ctx, elem.GetConnection(), request)
-	if err != nil {
-		return fmt.Errorf("rpc error: %w", err)
-	}
-	return nil
 
 }
 

@@ -2,17 +2,25 @@
 
 package core
 
+import (
+	"context"
+	"fmt"
+
+	"github.com/safermobility/kurento-go-next/v6"
+)
+
 type IBaseRtpEndpoint interface {
+	RequestKeyframe(context.Context) error
 }
 
-// Handles RTP communications.
+// Base class for the implementation of RTP-based communication endpoints.
 // <p>
 // All endpoints that rely on the RTP protocol, like the
-// <strong>RtpEndpoint</strong> or the <strong>WebRtcEndpoint</strong>, inherit
-// from this class. The endpoint provides information about the Connection state
+// `RtpEndpoint` or the `WebRtcEndpoint`, inherit
+// from this class. This endpoint provides information about the Connection state
 // and the Media state, which can be consulted at any time through the
-// :rom:attr:`getMediaState` and the :rom:attr:`getConnectionState` methods.
-// It is also possible subscribe to events fired when these properties change:
+// :rom:attr:`getMediaState` and the :rom:attr:`getConnectionState` methods. It
+// is also possible subscribe to events fired when these properties change:
 // </p>
 // <ul>
 // <li>
@@ -74,96 +82,147 @@ type IBaseRtpEndpoint interface {
 // :rom:evt:`MediaFlowInStateChanged` and
 // :rom:evt:`MediaFlowOutStateChanged`, which are triggered almost
 // immediately after the RTP data packets stop flowing between RTP session
-// participants. This makes the <em>MediaFlow</em> events a good way to
-// know if participants are suffering from short-term intermittent
-// connectivity issues, but they are not enough to know if the connectivity
-// issues are just spurious network hiccups or are part of a more long-term
+// participants. This makes the <em>MediaFlow</em> events a good way to know
+// if participants are suffering from short-term intermittent connectivity
+// issues, but they are not enough to know if the connectivity issues are
+// just spurious network hiccups or are part of a more long-term
 // disconnection problem.
 // </p>
 // </li>
 // </ul>
+// <h2>Bitrate management</h2>
 // <p>
-// Part of the bandwidth control for the video component of the media session is
-// done here:
+// <b>Bandwidth control</b> for the video component of the media session is done
+// here.
+// <strong>
+// Note that the default <em>MaxVideoSendBandwidth</em> is a VERY conservative
+// value, and leads to a low maximum video quality. Most applications will
+// probably want to increase this to higher values such as 2000 kbps (2 Mbps).
+// </strong>
 // </p>
 // <ul>
 // <li>
-// Input bandwidth: Values used to inform remote peers about the bitrate that
-// can be sent to this endpoint.
+// <b>Recv bandwidth</b>: Used to request a remote sender that its media
+// bitrate is within the requested range.
 // <ul>
 // <li>
-// <strong>MinVideoRecvBandwidth</strong>: Minimum input bitrate, requested
-// from WebRTC senders with REMB (Default: 30 Kbps).
-// </li>
+// <strong>MinVideoRecvBandwidth</strong>: Minimum inbound bitrate
+// requested by this endpoint. Signaled to compatible WebRTC and RTP
+// senders, as part of the REMB bandwidth estimation protocol.
+// <ul>
+// <li>Unit: kbps (kilobits per second).</li>
+// <li>Default: 0.</li>
 // <li>
-// <strong>MaxAudioRecvBandwidth</strong> and
-// <strong>MaxVideoRecvBandwidth</strong>: Maximum input bitrate, signaled
-// in SDP Offers to WebRTC and RTP senders (Default: unlimited).
+// Note: The actual minimum value is 30 kbps, even if a lower value is
+// set.
 // </li>
 // </ul>
 // </li>
 // <li>
-// Output bandwidth: Values used to control bitrate of the video streams sent
-// to remote peers. It is important to keep in mind that pushed bitrate depends
-// on network and remote peer capabilities. Remote peers can also announce
-// bandwidth limitation in their SDPs (through the
-// <code>b={modifier}:{value}</code> attribute). Kurento will always enforce
-// bitrate limitations specified by the remote peer over internal
-// configurations.
+// <strong>MaxAudioRecvBandwidth</strong> and
+// <strong>MaxVideoRecvBandwidth</strong>: Maximum inbound bitrate
+// requested by this endpoint. Signaled to compatible WebRTC and RTP
+// senders as part of Kurento's REMB bandwidth estimations, and also as an
+// SDP bitrate attribute (<code>b=AS:{value}</code>, see
+// <a href='https://datatracker.ietf.org/doc/html/rfc8866#section-5.8'
+// >RFC 8866 Section 5.8. Bandwidth Information</a
+// >) in <i>sendrecv</i> and <i>recvonly</i> SDP Offers.
 // <ul>
-// <li>
-// <strong>MinVideoSendBandwidth</strong>: REMB override of minimum bitrate
-// sent to WebRTC receivers (Default: 100 Kbps).
+// <li>Unit: kbps (kilobits per second).</li>
+// <li>Default: 0 (unlimited).</li>
+// </ul>
+// </li>
+// </ul>
 // </li>
 // <li>
-// <strong>MaxVideoSendBandwidth</strong>: REMB override of maximum bitrate
-// sent to WebRTC receivers (Default: 500 Kbps).
+// <b>Send bandwidth</b>: Used to control bitrate of the outbound media stream
+// sent to remote peers. It is important to keep in mind that outbound bitrate
+// ultimately depends on network and remote peer capabilities.
+// <ul>
+// <li>
+// <strong>MinVideoSendBandwidth</strong>: Minimum outbound bitrate sent by
+// this endpoint.
+// <ul>
+// <li>Unit: kbps (kilobits per second).</li>
+// <li>Default: 100.</li>
+// <li>
+// 0 = unlimited: the video bitrate will drop as needed, even to the
+// lowest possible quality, which could make the video completely
+// blurry and pixelated, but would adapt better to losses caused by
+// network congestion.
+// </li>
+// </ul>
+// </li>
+// <li>
+// <strong>MaxVideoSendBandwidth</strong>: Maximum outbound bitrate sent by
+// this endpoint. Remote peers themselves might also announce a maximum
+// bitrate as part of their REMB bandwidth estimations, and also as an SDP
+// bitrate attribute (<code>b=AS:{value}</code>, see
+// <a href='https://datatracker.ietf.org/doc/html/rfc8866#section-5.8'
+// >RFC 8866 Section 5.8. Bandwidth Information</a
+// >) in <i>sendrecv</i> and <i>recvonly</i> SDP Offers or Answers. Kurento
+// will always give priority to bitrate limitations specified by remote
+// peers, over internal configurations.
+// <ul>
+// <li>Unit: kbps (kilobits per second).</li>
+// <li>Default: 500.</li>
+// <li>
+// 0 = unlimited: the video bitrate will grow until all the available
+// network bandwidth is used by the stream.<br />
+// Note that this might have a bad effect if more than one stream is
+// running (as all of them would try to raise the video bitrate
+// indefinitely, until the network gets saturated).
+// </li>
+// </ul>
 // </li>
 // <li>
 // <strong>RembParams.rembOnConnect</strong>: Initial local REMB bandwidth
-// estimation that gets propagated when a new endpoint is connected.
+// estimation that gets used when a new endpoint is connected. Only useful
+// for connections that are compatible with the REMB bandwidth estimation
+// protocol (such as most WebRTC peers).
 // </li>
 // </ul>
 // </li>
 // </ul>
 // <p>
 // <strong>
-// All bandwidth control parameters must be changed before the SDP negotiation
-// takes place, and can't be changed afterwards.
+// All bandwidth control parameters must be set before the SDP negotiation
+// takes place, and can't be modified afterwards.
 // </strong>
+// </p>
+// <p>
+// Take into consideration that setting a too high upper limit for the output
+// bandwidth can be a reason for the network connection to be congested quickly.
 // </p>
 type BaseRtpEndpoint struct {
 	SdpEndpoint
 
-	// Minimum input bitrate, requested from WebRTC senders with REMB.
+	//
+	// Minimum inbound bitrate requested by this endpoint. Signaled to compatible
+	// WebRTC and RTP senders, as part of the REMB bandwidth estimation protocol.
 	// <p>
-	// This is used to set a minimum value of local REMB during bandwidth estimation,
-	// if supported by the implementing class. The REMB estimation will then be sent
-	// to remote peers, requesting them to send at least the indicated video bitrate.
-	// It follows that min values will only have effect in remote peers that support
-	// this congestion control mechanism, such as Chrome.
+	// This is used to set a minimum value of local REMB during bandwidth estimation.
+	// The REMB estimation will then be sent to remote peers, causing them to send
+	// at least the indicated video bitrate. It follows that this parameter will only
+	// have effect for remote peers that support the REMB bandwidth estimation
+	// protocol (such as e.g. most web browsers compatible with WebRTC).
 	// </p>
 	// <ul>
 	// <li>Unit: kbps (kilobits per second).</li>
 	// <li>Default: 0.</li>
 	// <li>
-	// Note: The absolute minimum REMB value is 30 kbps, even if a lower value is
-	// set here.
+	// Note: The actual minimum value is 30 kbps, even if a lower value is set.
 	// </li>
 	// </ul>
 	//
 	MinVideoRecvBandwidth int
 
-	// REMB override of minimum bitrate sent to WebRTC receivers.
+	//
+	// Minimum outbound bitrate sent by this endpoint.
 	// <p>
 	// With this parameter you can control the minimum video quality that will be
 	// sent when reacting to bad network conditions. Setting this parameter to a low
 	// value permits the video quality to drop when the network conditions get worse.
-	// </p>
-	// <p>
-	// This parameter provides a way to override the bitrate requested by remote REMB
-	// bandwidth estimations: the bitrate sent will be always equal or greater than
-	// this parameter, even if the remote peer requests even lower bitrates.
 	// </p>
 	// <p>
 	// Note that if you set this parameter too high (trying to avoid bad video
@@ -176,14 +235,22 @@ type BaseRtpEndpoint struct {
 	// <li>Default: 100.</li>
 	// <li>
 	// 0 = unlimited: the video bitrate will drop as needed, even to the lowest
-	// possible quality, which might make the video completely blurry and
-	// pixelated.
+	// possible quality, which could make the video completely blurry and
+	// pixelated, but would adapt better to losses caused by network congestion.
 	// </li>
 	// </ul>
 	//
 	MinVideoSendBandwidth int
 
-	// REMB override of maximum bitrate sent to WebRTC receivers.
+	//
+	// Maximum outbound bitrate sent by this endpoint. Remote peers themselves might
+	// also announce a maximum bitrate as part of their REMB bandwidth estimations, and
+	// also as an SDP bitrate attribute (<code>b=AS:{value}</code>, see
+	// <a href='https://datatracker.ietf.org/doc/html/rfc8866#section-5.8'
+	// >RFC 8866 Section 5.8. Bandwidth Information</a
+	// >) in <i>sendrecv</i> and <i>recvonly</i> SDP Offers or Answers. Kurento will
+	// always give priority to bitrate limitations specified by remote peers, over
+	// internal configurations.
 	// <p>
 	// With this parameter you can control the maximum video quality that will be
 	// sent when reacting to good network conditions. Setting this parameter to a
@@ -191,15 +258,11 @@ type BaseRtpEndpoint struct {
 	// better.
 	// </p>
 	// <p>
-	// This parameter provides a way to limit the bitrate requested by remote REMB
-	// bandwidth estimations: the bitrate sent will be always equal or less than this
-	// parameter, even if the remote peer requests higher bitrates.
-	// </p>
-	// <p>
-	// Note that the default value of <strong>500 kbps</strong> is a VERY
-	// conservative one, and leads to a low maximum video quality. Most applications
-	// will probably want to increase this to higher values such as 2000 kbps (2
-	// mbps).
+	// <strong>
+	// Note that the default <em>MaxVideoSendBandwidth</em> is a VERY conservative
+	// value, and leads to a low maximum video quality. Most applications will
+	// probably want to increase this to higher values such as 2000 kbps (2 Mbps).
+	// </strong>
 	// </p>
 	// <p>
 	// The REMB congestion control algorithm works by gradually increasing the output
@@ -288,4 +351,25 @@ type BaseRtpEndpoint_builder struct {
 
 func (BaseRtpEndpoint_builder) GetTypeName() string {
 	return "BaseRtpEndpoint"
+}
+
+type BaseRtpEndpointRequestKeyframeParams struct {
+}
+
+func (BaseRtpEndpointRequestKeyframeParams) OperationName() string {
+	return "requestKeyframe"
+}
+
+// Force sending a new keyframe request to the upstream elements in the Kurento
+// Pipeline, towards the associated producer. Only valid for video consumers.
+func (elem *BaseRtpEndpoint) RequestKeyframe(ctx context.Context) error {
+	request := kurento.BuildInvoke(elem.Id, &BaseRtpEndpointRequestKeyframeParams{})
+
+	// Returns error or nil
+	_, err := kurento.CallSimple[any](ctx, elem.GetConnection(), request)
+	if err != nil {
+		return fmt.Errorf("rpc error: %w", err)
+	}
+	return nil
+
 }

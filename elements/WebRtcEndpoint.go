@@ -17,62 +17,63 @@ type IWebRtcEndpoint interface {
 	CloseDataChannel(context.Context, *WebRtcEndpointCloseDataChannelParams) error
 }
 
-// Control interface for Kurento WebRTC endpoint.
+// Endpoint that provides bidirectional WebRTC capabilities for Kurento.
 // <p>
-// This endpoint is one side of a peer-to-peer WebRTC communication, being the
-// other peer a WebRTC capable browser -using the RTCPeerConnection API-, a
-// native WebRTC app or even another Kurento Media Server.
+// This endpoint is one side of a peer-to-peer WebRTC communication, where the
+// other peer is either of a WebRTC capable browser (using the
+// <em>RTCPeerConnection</em> API), a native WebRTC app, or even another Kurento
+// Media Server instance.
 // </p>
 // <p>
-// In order to establish a WebRTC communication, peers engage in an SDP
-// negotiation process, where one of the peers (the offerer) sends an offer,
-// while the other peer (the offeree) responds with an answer. This endpoint can
-// function in both situations
+// In order to establish WebRTC communications, peers first engage in an SDP
+// Offer/Answer negotiation process, where one of the peers (the offerer) sends
+// an SDP Offer, while the other peer (the answerer) responds with an SDP Answer.
+// This endpoint can work in both roles.
 // </p>
 // <ul>
 // <li>
-// As offerer: The negotiation process is initiated by the media server
+// <b>As offerer</b>: The negotiation process is initiated by the media server.
 // <ul>
 // <li>
-// KMS generates the SDP offer through the
-// <code>generateOffer</code> method. This <i>offer</i> must then be sent
-// to the remote peer (the offeree) through the signaling channel, for
-// processing.
+// Kurento generates the SDP Offer through the
+// <code>generateOffer()</code> method. This offer must then be sent to the
+// remote peer (the answerer) through the signaling channel.
 // </li>
 // <li>
-// The remote peer processes the <i>offer</i>, and generates an
-// <i>answer</i>. The <i>answer</i> is sent back to the media server.
+// The remote peer process the SDP Offer, and generates an SDP Answer. This
+// answer is then sent back to the media server.
 // </li>
 // <li>
-// Upon receiving the <i>answer</i>, the endpoint must invoke the
-// <code>processAnswer</code> method.
+// Upon receiving the SDP Answer, this endpoint must process it with the
+// <code>processAnswer()</code> method.
 // </li>
 // </ul>
 // </li>
 // <li>
-// As offeree: The negotiation process is initiated by the remote peer
+// <b>As answerer</b>: The negotiation process is initiated by the remote peer.
 // <ul>
 // <li>
-// The remote peer, acting as offerer, generates an SDP <i>offer</i> and
-// sends it to the WebRTC endpoint in Kurento.
+// The remote peer, acting as offerer, generates an SDP Offer and sends it
+// to this endpoint.
 // </li>
 // <li>
-// The endpoint will process the <i>offer</i> invoking the
-// <code>processOffer</code> method. The result of this method will be a
-// string, containing an SDP <i>answer</i>.
+// This endpoint processes the SDP Offer with the
+// <code>processOffer()</code> method. The result of this method will be a
+// string, containing an SDP Answer.
 // </li>
 // <li>
-// The SDP <i>answer</i> must be sent back to the offerer, so it can be
-// processed.
+// The SDP Answer must then be sent back to the offerer, so it can be
+// processed by it.
 // </li>
 // </ul>
 // </li>
 // </ul>
+// <h2>ICE candidates and connectivity checks</h2>
 // <p>
 // SDPs are sent without ICE candidates, following the Trickle ICE optimization.
 // Once the SDP negotiation is completed, both peers proceed with the ICE
 // discovery process, intended to set up a bidirectional media connection. During
-// this process, each peer
+// this process, each peer...
 // </p>
 // <ul>
 // <li>
@@ -90,16 +91,16 @@ type IWebRtcEndpoint interface {
 // <p>
 // Once a suitable pair of candidates (one for each peer) is discovered, the
 // media session can start. The harvesting process in Kurento, begins with the
-// invocation of the <code>gatherCandidates</code> method. Since the whole
+// invocation of the <code>gatherCandidates()</code> method. Since the whole
 // Trickle ICE purpose is to speed-up connectivity, candidates are generated
 // asynchronously. Therefore, in order to capture the candidates, the user must
 // subscribe to the event <code>IceCandidateFound</code>. It is important that
-// the event listener is bound before invoking <code>gatherCandidates</code>,
+// the event listener is bound before invoking <code>gatherCandidates()</code>,
 // otherwise a suitable candidate might be lost, and connection might not be
 // established.
 // </p>
 // <p>
-// It's important to keep in mind that WebRTC connection is an asynchronous
+// It is important to keep in mind that WebRTC connection is an asynchronous
 // process, when designing interactions between different MediaElements. For
 // example, it would be pointless to start recording before media is flowing. In
 // order to be notified of state changes, the application can subscribe to events
@@ -108,7 +109,7 @@ type IWebRtcEndpoint interface {
 // </p>
 // <ul>
 // <li>
-// <code>IceComponentStateChange</code>: This event informs only about changes
+// <code>IceComponentStateChanged</code>: This event informs only about changes
 // in the ICE connection state. Possible values are:
 // <ul>
 // <li><code>DISCONNECTED</code>: No activity scheduled</li>
@@ -124,7 +125,7 @@ type IWebRtcEndpoint interface {
 // </li>
 // </ul>
 // The transitions between states are covered in RFC5245. It could be said that
-// it's network-only, as it only takes into account the state of the network
+// it is network-only, as it only takes into account the state of the network
 // connection, ignoring other higher level stuff, like DTLS handshake, RTCP
 // flow, etc. This implies that, while the component state is
 // <code>CONNECTED</code>, there might be no media flowing between the peers.
@@ -149,94 +150,70 @@ type IWebRtcEndpoint interface {
 // for a component. This event can be raised during a media session, if a new
 // pair of candidates with higher priority in the link are found.
 // </li>
-// <li><code>DataChannelOpen</code>: Raised when a data channel is open.</li>
-// <li><code>DataChannelClose</code>: Raised when a data channel is closed.</li>
+// <li><code>DataChannelOpened</code>: Raised when a data channel is open.</li>
+// <li><code>DataChannelClosed</code>: Raised when a data channel is closed.</li>
 // </ul>
 // <p>
 // Registering to any of above events requires the application to provide a
 // callback function. Each event provides different information, so it is
 // recommended to consult the signature of the event listeners.
 // </p>
+// <h2>Bitrate management and network congestion control</h2>
 // <p>
-// Flow control and congestion management is one of the most important features
-// of WebRTC. WebRTC connections start with the lowest bandwidth configured and
-// slowly ramps up to the maximum available bandwidth, or to the higher limit of
-// the exploration range in case no bandwidth limitation is detected. Notice that
-// WebRtcEndpoints in Kurento are designed in a way that multiple WebRTC
-// connections fed by the same stream share quality. When a new connection is
-// added, as it requires to start with low bandwidth, it will cause the rest of
-// connections to experience a transient period of degraded quality, until it
-// stabilizes its bitrate. This doesn't apply when transcoding is involved.
-// Transcoders will adjust their output bitrate based in bandwidth requirements,
-// but it won't affect the original stream. If an incoming WebRTC stream needs to
-// be transcoded, for whatever reason, all WebRtcEndpoints fed from transcoder
-// output will share a separate quality than the ones connected directly to the
-// original stream.
+// Congestion control is one of the most important features of WebRTC. WebRTC
+// connections start with the lowest bandwidth configured and slowly ramps up to
+// the maximum available bandwidth, or to the higher limit of the allowed range
+// in case no bandwidth limitation is detected.
 // </p>
 // <p>
-// Note that the default <strong>VideoSendBandwidth</strong> range of the
-// endpoint is a VERY conservative one, and leads to a low maximum video quality.
-// Most applications will probably want to increase this to higher values such as
-// 2000 kbps (2 mbps).
+// Notice that WebRtcEndpoints in Kurento are designed in a way that
+// <strong>
+// multiple WebRTC connections fed by the same stream, share the same bitrate
+// limits.
+// </strong>
+// When a new connection is added, as it requires to start with low bandwidth, it
+// will cause the rest of connections to experience a transient period of
+// degraded quality, until it stabilizes its bitrate. This doesn't apply when
+// transcoding is involved; transcoders will adjust their output bitrate based in
+// the receiver requirements, but it won't affect the original stream.
+// </p>
+// <p>
+// If an incoming WebRTC stream needs to be transcoded, for whatever reason, all
+// WebRtcEndpoints fed from the transcoder output will share a separate quality
+// than the ones connected directly to the original stream.
 // </p>
 // <p>
 // <strong>
-// Check the extended documentation of these parameters in
-// `SdpEndpoint`, `BaseRtpEndpoint`, and
-// `RembParams`.
+// Note that the default <em>MaxVideoSendBandwidth</em> is a VERY conservative
+// value, and leads to a low maximum video quality. Most applications will
+// probably want to increase this to higher values such as 2000 kbps (2 Mbps).
 // </strong>
+// Check the documentation of `BaseRtpEndpoint` and
+// `RembParams` for detailed information about bitrate management.
 // </p>
-// <ul>
-// <li>
-// Input bandwidth: Values used to inform remote peers about the bitrate that
-// can be sent to this endpoint.
-// <ul>
-// <li>
-// <strong>MinVideoRecvBandwidth</strong>: Minimum input bitrate, requested
-// from WebRTC senders with REMB (Default: 30 Kbps).
-// </li>
-// <li>
-// <strong>MaxAudioRecvBandwidth</strong> and
-// <strong>MaxVideoRecvBandwidth</strong>: Maximum input bitrate, signaled
-// in SDP Offers to WebRTC and RTP senders (Default: unlimited).
-// </li>
-// </ul>
-// </li>
-// <li>
-// Output bandwidth: Values used to control bitrate of the video streams sent
-// to remote peers. It is important to keep in mind that pushed bitrate depends
-// on network and remote peer capabilities. Remote peers can also announce
-// bandwidth limitation in their SDPs (through the
-// <code>b={modifier}:{value}</code> attribute). Kurento will always enforce
-// bitrate limitations specified by the remote peer over internal
-// configurations.
-// <ul>
-// <li>
-// <strong>MinVideoSendBandwidth</strong>: REMB override of minimum bitrate
-// sent to WebRTC receivers (Default: 100 Kbps).
-// </li>
-// <li>
-// <strong>MaxVideoSendBandwidth</strong>: REMB override of maximum bitrate
-// sent to WebRTC receivers (Default: 500 Kbps).
-// </li>
-// <li>
-// <strong>RembParams.rembOnConnect</strong>: Initial local REMB bandwidth
-// estimation that gets propagated when a new endpoint is connected.
-// </li>
-// </ul>
-// </li>
-// </ul>
+// <h3>Keyframe requests (PLI/FIR)</h3>
 // <p>
-// <strong>
-// All bandwidth control parameters must be changed before the SDP negotiation
-// takes place, and can't be changed afterwards.
-// </strong>
+// WebRTC allows receivers to emit keyframe requests for the senders, by means of
+// RTCP Feedback messages called PLI (Picture Loss Indication) and/or FIR (Full
+// Intra-frame Request). Kurento supports this mechanism: PLI and FIR requests
+// that are emitted by a receiver will be forwarded to the sender. This way, the
+// encoder of the video (e.g. a web browser) can decide if a new keyframe should
+// be generated. Sometimes Kurento itself acts as encoder when transcoding is
+// enabled, so in this case it is Kurento itself the one generating keyframes.
 // </p>
+// <p>
+// On top of this, a common technique used for streaming is to forcefully request
+// new keyframes. Either in fixed intervals, or explicitly by the application.
+// Kurento doesn't support the former, but the latter is possible by calling
+// <code>requestKeyframe()</code> from a subscribing element (i.e. an endpoint
+// that sends data out from the Kurento Pipeline).
+// </p>
+// <h2>WebRTC Data Channels</h2>
 // <p>
 // DataChannels allow other media elements that make use of the DataPad, to send
 // arbitrary data. For instance, if there is a filter that publishes event
-// information, it'll be sent to the remote peer through the channel. There is no
-// API available for programmers to make use of this feature in the
+// information, it will be sent to the remote peer through the channel. There is
+// no API available for programmers to make use of this feature in the
 // WebRtcElement. DataChannels can be configured to provide the following:
 // </p>
 // <ul>
@@ -426,34 +403,6 @@ type WebRtcEndpoint struct {
 	// </ul>
 	//
 	ExternalIPv6 string
-
-	// External IP address of the media server.
-	// <p>
-	// Forces all local IPv4 and IPv6 ICE candidates to have the given address. This
-	// is really nothing more than a hack, but it's very effective to force a public
-	// IP address when one is known in advance for the media server. In doing so, KMS
-	// will not need a STUN or TURN server, but remote peers will still be able to
-	// contact it.
-	// </p>
-	// <p>
-	// You can try using this setting if KMS is deployed on a publicly accessible
-	// server, without NAT, and with a static public IP address. But if it doesn't
-	// work for you, just go back to configuring a STUN or TURN server for ICE.
-	// </p>
-	// <p>
-	// Only set this parameter if you know what you're doing, and you understand 100%
-	// WHY you need it. For the majority of cases, you should just prefer to
-	// configure a STUN or TURN server.
-	// </p>
-	// <p><code>externalAddress</code> is a single IPv4 or IPv6 address.</p>
-	// <p>Examples:</p>
-	// <ul>
-	// <li><code>externalAddress=198.51.100.1</code></li>
-	// <li><code>externalAddress=2001:0db8:85a3:0000:0000:8a2e:0370:7334</code></li>
-	// </ul>
-	// @deprecated Use <code>externalIPv4</code> and/or <code>externalIPv6</code> instead.
-	//
-	ExternalAddress string
 
 	// the ICE candidate pair (local and remote candidates) used by the ICE library for each stream.
 	ICECandidatePairs []*IceCandidatePair

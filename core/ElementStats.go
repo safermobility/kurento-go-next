@@ -3,7 +3,5 @@
 package core
 
 type ElementStats struct {
-	InputAudioLatency float64
-	InputVideoLatency float64
-	InputLatency      []MediaLatencyStat
+	InputLatency []MediaLatencyStat
 }

@@ -66,7 +66,7 @@ func (elem *MediaObject) setParent(m IMediaObject) {
 }
 
 func (elem *MediaObject) addChild(m IMediaObject) {
-	elem.Childs = append(elem.Childs, m)
+	elem.Children = append(elem.Children, m)
 }
 
 func (m *MediaObject) setID(id string) {
