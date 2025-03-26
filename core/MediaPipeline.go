@@ -13,7 +13,7 @@ type IMediaPipeline interface {
 	GetGstreamerDot(context.Context, *MediaPipelineGetGstreamerDotParams) (string, error)
 }
 
-// A pipeline is a container for a collection of `MediaElements<MediaElement>` and `MediaMixers<MediaMixer>`.
+// A pipeline is a container for a collection of `MediaElements<MediaElement>`.
 // It offers the methods needed to control the creation and connection of elements inside a certain pipeline.
 type MediaPipeline struct {
 	MediaObject

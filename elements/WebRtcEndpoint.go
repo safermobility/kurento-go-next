@@ -409,6 +409,9 @@ type WebRtcEndpoint struct {
 
 	// the ICE connection state for all the connections.
 	IceConnectionState []*IceConnection
+
+	// the DTLS connection state for all the connections.
+	DtlsConnectionState []*DtlsConnection
 }
 
 type WebRtcEndpoint_builder struct {

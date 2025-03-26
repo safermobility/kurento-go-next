@@ -10,7 +10,7 @@ import (
 )
 
 // Base interface used to manage capabilities common to all Kurento elements.
-// <h4>Properties</h4>
+// <h2>Properties</h2>
 // <ul>
 // <li>
 // <b>id</b>: unique identifier assigned to this <code>MediaObject</code> at
@@ -46,7 +46,7 @@ import (
 // </ul>
 // <br />
 // <br />
-// <h4>Events</h4>
+// <h2>Events</h2>
 // <ul>
 // <li>
 // <strong>:rom:evt:`Error`</strong>: reports asynchronous error events. It is recommended to

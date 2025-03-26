@@ -51,7 +51,7 @@ type IPlayerEndpoint interface {
 // <li><code>rtsp://host</code></li>
 // <li>
 // <code>
-// rtsp://username:password@host:port/path/to/file?key=value&key=value
+// rtsp://username:password&#64;host:port/path/to/file?key=value&amp;key=value
 // </code>
 // </li>
 // </ul>

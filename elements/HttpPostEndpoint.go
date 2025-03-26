@@ -9,7 +9,7 @@ type IHttpPostEndpoint interface {
 
 // An `HttpPostEndpoint` contains SINK pads for AUDIO and VIDEO, which provide access to an HTTP file upload function
 //
-// This type of endpoint provide unidirectional communications. Its `MediaSources <MediaSource>` are accessed through the HTTP POST method.
+// This type of endpoint provide unidirectional communications. Its MediaSource are accessed through the HTTP POST method.
 type HttpPostEndpoint struct {
 	HttpEndpoint
 }

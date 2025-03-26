@@ -11,6 +11,8 @@ func (t VideoCodec) String() string {
 }
 
 const (
+	VIDEOCODEC_AV1  VideoCodec = "AV1"
+	VIDEOCODEC_VP9  VideoCodec = "VP9"
 	VIDEOCODEC_VP8  VideoCodec = "VP8"
 	VIDEOCODEC_H264 VideoCodec = "H264"
 	VIDEOCODEC_RAW  VideoCodec = "RAW"
