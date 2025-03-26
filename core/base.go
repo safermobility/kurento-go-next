@@ -3,7 +3,7 @@ package core
 import (
 	"context"
 
-	"github.com/safermobility/kurento-go-next/v6"
+	"github.com/safermobility/kurento-go-next/v7"
 )
 
 type IMediaObject interface {

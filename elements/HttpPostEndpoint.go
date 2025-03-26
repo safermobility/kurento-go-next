@@ -2,7 +2,7 @@
 
 package elements
 
-import "github.com/safermobility/kurento-go-next/v6/core"
+import "github.com/safermobility/kurento-go-next/v7/core"
 
 type IHttpPostEndpoint interface {
 }

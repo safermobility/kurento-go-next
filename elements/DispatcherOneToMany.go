@@ -6,8 +6,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/safermobility/kurento-go-next/v6"
-	"github.com/safermobility/kurento-go-next/v6/core"
+	"github.com/safermobility/kurento-go-next/v7"
+	"github.com/safermobility/kurento-go-next/v7/core"
 )
 
 type IDispatcherOneToMany interface {

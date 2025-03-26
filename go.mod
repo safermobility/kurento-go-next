@@ -1,4 +1,4 @@
-module github.com/safermobility/kurento-go-next/v6
+module github.com/safermobility/kurento-go-next/v7
 
 go 1.24.0
 
@@ -16,6 +16,6 @@ require (
 )
 
 tool (
-	github.com/safermobility/kurento-go-next/v6
+	github.com/safermobility/kurento-go-next/v7
 	golang.org/x/tools/cmd/goimports
 )

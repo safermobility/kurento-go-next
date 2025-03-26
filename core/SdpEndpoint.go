@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/safermobility/kurento-go-next/v6"
+	"github.com/safermobility/kurento-go-next/v7"
 )
 
 type ISdpEndpoint interface {
