@@ -38,7 +38,7 @@ func NewMediaPipeline(ctx context.Context, connection *kurento.Client) (*MediaPi
 	elem := &MediaObject{}
 	elem.setConnection(connection)
 	mp := &MediaPipeline{}
-	err := elem.Create(ctx, mp, nil)
+	err := elem.Create(ctx, mp, &MediaPipeline_builder{})
 	return mp, err
 }
 
