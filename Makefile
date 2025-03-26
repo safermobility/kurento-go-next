@@ -1,4 +1,4 @@
-.PHONY: all
+.PHONY: all clean build
 
 all: clean prep build
 
@@ -14,6 +14,3 @@ prep:
 build:
 	cd build/fix-kurento-json && ./gradlew run
 	go generate ./...
-
-format:
-	goimports -w core elements
