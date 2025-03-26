@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/safermobility/kurento-go-next"
+	"github.com/safermobility/kurento-go-next/v6"
 )
 
 type IMediaPipeline interface {
