@@ -1,3 +1,4 @@
+.task/
 build/fix-kurento-json/.gradle
 build/fix-kurento-json/build
 build/kurento/

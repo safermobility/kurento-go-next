@@ -1,0 +1,77 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+tasks:
+
+  preprocess:
+    desc: Preprocess *.kmd.json files
+    sources:
+      - 'build/kurento/**/*.kmd.json'
+    generates:
+      - build/kms-core-valid-json/*.json
+      - build/kms-elements-valid-json/*.json
+    deps:
+      - ensure-dirs
+    dir: build/fix-kurento-json
+    cmd: gradlew run
+
+  build:
+    desc: Generate library
+    sources:
+      - 'build/*.go'
+      - 'build/*.tmpl'
+    generates:
+      - core/*.go
+      - elements/*.go
+    deps:
+      - ensure-dirs
+      - preprocess
+    cmd: go generate ./...
+
+  # INTERNAL
+
+  ensure-dirs:
+    internal: true
+    silent: true
+    cmds:
+      - for:
+        - core
+        - elements
+        - build/kms-core-valid-json
+        - build/kms-elements-valid-json
+        task: ensure-dir
+        vars:
+          DIR: '{{.ITEM}}'
+
+  ensure-dir:
+    internal: true
+    silent: true
+    cmds:
+      - cmd: powershell -Command "[System.IO.Directory]::CreateDirectory('{{.DIR}}') | out-null"
+        platforms: [windows]
+      - cmd: mkdir -p {{.DIR}}
+        platforms: [darwin,linux]
+    status:
+      - test -d {{.DIR}}
+
+  clean:
+    cmds:
+      - for:
+        - core
+        - elements
+        - build\kms-core-valid-json
+        - build\kms-elements-valid-json
+        task: clean-dir
+        vars:
+          DIR: '{{.ITEM}}'
+
+  clean-dir:
+    internal: true
+    silent: true
+    cmds:
+    - cmd: cmd /c "rmdir {{.DIR}} /s /q"
+      platforms: [windows]
+    - cmd: rm -rf {{.DIR}}
+      platforms: [darwin,linux]
+    status:
+      - test ! -d "{{.DIR}}"
