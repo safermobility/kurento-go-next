@@ -108,8 +108,8 @@ func (MediaObject_builder) GetTypeName() string {
 }
 
 type MediaObjectAddTagParams struct {
-	Key   string `json:"Key"`
-	Value string `json:"Value"`
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
 func (MediaObjectAddTagParams) OperationName() string {
@@ -131,7 +131,7 @@ func (elem *MediaObject) AddTag(ctx context.Context, params *MediaObjectAddTagPa
 }
 
 type MediaObjectRemoveTagParams struct {
-	Key string `json:"Key"`
+	Key string `json:"key"`
 }
 
 func (MediaObjectRemoveTagParams) OperationName() string {
@@ -153,7 +153,7 @@ func (elem *MediaObject) RemoveTag(ctx context.Context, params *MediaObjectRemov
 }
 
 type MediaObjectGetTagParams struct {
-	Key string `json:"Key"`
+	Key string `json:"key"`
 }
 
 func (MediaObjectGetTagParams) OperationName() string {

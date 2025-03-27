@@ -153,8 +153,8 @@ func (MediaElement_builder) GetTypeName() string {
 }
 
 type MediaElementGetSourceConnectionsParams struct {
-	MediaType   MediaType `json:"MediaType"`
-	Description string    `json:"Description"`
+	MediaType   MediaType `json:"mediaType,omitempty"`
+	Description string    `json:"description,omitempty"`
 }
 
 func (MediaElementGetSourceConnectionsParams) OperationName() string {
@@ -184,8 +184,8 @@ func (elem *MediaElement) GetSourceConnections(ctx context.Context, params *Medi
 }
 
 type MediaElementGetSinkConnectionsParams struct {
-	MediaType   MediaType `json:"MediaType"`
-	Description string    `json:"Description"`
+	MediaType   MediaType `json:"mediaType,omitempty"`
+	Description string    `json:"description,omitempty"`
 }
 
 func (MediaElementGetSinkConnectionsParams) OperationName() string {
@@ -215,10 +215,10 @@ func (elem *MediaElement) GetSinkConnections(ctx context.Context, params *MediaE
 }
 
 type MediaElementConnectParams struct {
-	Sink                   IMediaElement `json:"Sink"`
-	MediaType              MediaType     `json:"MediaType"`
-	SourceMediaDescription string        `json:"SourceMediaDescription"`
-	SinkMediaDescription   string        `json:"SinkMediaDescription"`
+	Sink                   IMediaElement `json:"sink"`
+	MediaType              MediaType     `json:"mediaType,omitempty"`
+	SourceMediaDescription string        `json:"sourceMediaDescription,omitempty"`
+	SinkMediaDescription   string        `json:"sinkMediaDescription,omitempty"`
 }
 
 func (MediaElementConnectParams) OperationName() string {
@@ -265,10 +265,10 @@ func (elem *MediaElement) Connect(ctx context.Context, params *MediaElementConne
 }
 
 type MediaElementDisconnectParams struct {
-	Sink                   IMediaElement `json:"Sink"`
-	MediaType              MediaType     `json:"MediaType"`
-	SourceMediaDescription string        `json:"SourceMediaDescription"`
-	SinkMediaDescription   string        `json:"SinkMediaDescription"`
+	Sink                   IMediaElement `json:"sink"`
+	MediaType              MediaType     `json:"mediaType,omitempty"`
+	SourceMediaDescription string        `json:"sourceMediaDescription,omitempty"`
+	SinkMediaDescription   string        `json:"sinkMediaDescription,omitempty"`
 }
 
 func (MediaElementDisconnectParams) OperationName() string {
@@ -289,7 +289,7 @@ func (elem *MediaElement) Disconnect(ctx context.Context, params *MediaElementDi
 }
 
 type MediaElementSetAudioFormatParams struct {
-	Caps AudioCaps `json:"Caps"`
+	Caps AudioCaps `json:"caps"`
 }
 
 func (MediaElementSetAudioFormatParams) OperationName() string {
@@ -318,7 +318,7 @@ func (elem *MediaElement) SetAudioFormat(ctx context.Context, params *MediaEleme
 }
 
 type MediaElementSetVideoFormatParams struct {
-	Caps VideoCaps `json:"Caps"`
+	Caps VideoCaps `json:"caps"`
 }
 
 func (MediaElementSetVideoFormatParams) OperationName() string {
@@ -347,7 +347,7 @@ func (elem *MediaElement) SetVideoFormat(ctx context.Context, params *MediaEleme
 }
 
 type MediaElementDumpGstreamerDotParams struct {
-	Details GstreamerDotDetails `json:"Details"`
+	Details GstreamerDotDetails `json:"details,omitempty"`
 }
 
 func (MediaElementDumpGstreamerDotParams) OperationName() string {
@@ -378,7 +378,7 @@ func (elem *MediaElement) DumpGstreamerDot(ctx context.Context, params *MediaEle
 }
 
 type MediaElementGetGstreamerDotParams struct {
-	Details GstreamerDotDetails `json:"Details"`
+	Details GstreamerDotDetails `json:"details,omitempty"`
 }
 
 func (MediaElementGetGstreamerDotParams) OperationName() string {
@@ -412,7 +412,7 @@ func (elem *MediaElement) GetGstreamerDot(ctx context.Context, params *MediaElem
 }
 
 type MediaElementGetStatsParams struct {
-	MediaType MediaType `json:"MediaType"`
+	MediaType MediaType `json:"mediaType,omitempty"`
 }
 
 func (MediaElementGetStatsParams) OperationName() string {
@@ -435,8 +435,8 @@ func (elem *MediaElement) GetStats(ctx context.Context, params *MediaElementGetS
 }
 
 type MediaElementIsMediaFlowingInParams struct {
-	MediaType            MediaType `json:"MediaType"`
-	SinkMediaDescription string    `json:"SinkMediaDescription"`
+	MediaType            MediaType `json:"mediaType"`
+	SinkMediaDescription string    `json:"sinkMediaDescription,omitempty"`
 }
 
 func (MediaElementIsMediaFlowingInParams) OperationName() string {
@@ -459,8 +459,8 @@ func (elem *MediaElement) IsMediaFlowingIn(ctx context.Context, params *MediaEle
 }
 
 type MediaElementIsMediaFlowingOutParams struct {
-	MediaType              MediaType `json:"MediaType"`
-	SourceMediaDescription string    `json:"SourceMediaDescription"`
+	MediaType              MediaType `json:"mediaType"`
+	SourceMediaDescription string    `json:"sourceMediaDescription,omitempty"`
 }
 
 func (MediaElementIsMediaFlowingOutParams) OperationName() string {
@@ -483,8 +483,8 @@ func (elem *MediaElement) IsMediaFlowingOut(ctx context.Context, params *MediaEl
 }
 
 type MediaElementIsMediaTranscodingParams struct {
-	MediaType MediaType `json:"MediaType"`
-	BinName   string    `json:"BinName"`
+	MediaType MediaType `json:"mediaType"`
+	BinName   string    `json:"binName,omitempty"`
 }
 
 func (MediaElementIsMediaTranscodingParams) OperationName() string {

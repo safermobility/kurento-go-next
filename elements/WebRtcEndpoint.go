@@ -418,11 +418,11 @@ type WebRtcEndpoint_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	MediaPipeline      core.MediaPipeline `json:"mediaPipeline"`
-	Recvonly           bool               `json:"recvonly"`
-	Sendonly           bool               `json:"sendonly"`
-	UseDataChannels    bool               `json:"useDataChannels"`
-	CertificateKeyType CertificateKeyType `json:"certificateKeyType"`
-	QosDscp            DSCPValue          `json:"qosDscp"`
+	Recvonly           bool               `json:"recvonly,omitempty"`
+	Sendonly           bool               `json:"sendonly,omitempty"`
+	UseDataChannels    bool               `json:"useDataChannels,omitempty"`
+	CertificateKeyType CertificateKeyType `json:"certificateKeyType,omitempty"`
+	QosDscp            DSCPValue          `json:"qosDscp,omitempty"`
 }
 
 func (WebRtcEndpoint_builder) GetTypeName() string {
@@ -473,7 +473,7 @@ func (elem *WebRtcEndpoint) GatherCandidates(ctx context.Context) error {
 }
 
 type WebRtcEndpointAddIceCandidateParams struct {
-	Candidate IceCandidate `json:"Candidate"`
+	Candidate IceCandidate `json:"candidate"`
 }
 
 func (WebRtcEndpointAddIceCandidateParams) OperationName() string {
@@ -494,11 +494,11 @@ func (elem *WebRtcEndpoint) AddIceCandidate(ctx context.Context, params *WebRtcE
 }
 
 type WebRtcEndpointCreateDataChannelParams struct {
-	Label             string `json:"Label"`
-	Ordered           bool   `json:"Ordered"`
-	MaxPacketLifeTime int    `json:"MaxPacketLifeTime"`
-	MaxRetransmits    int    `json:"MaxRetransmits"`
-	Protocol          string `json:"Protocol"`
+	Label             string `json:"label,omitempty"`
+	Ordered           bool   `json:"ordered,omitempty"`
+	MaxPacketLifeTime int    `json:"maxPacketLifeTime,omitempty"`
+	MaxRetransmits    int    `json:"maxRetransmits,omitempty"`
+	Protocol          string `json:"protocol,omitempty"`
 }
 
 func (WebRtcEndpointCreateDataChannelParams) OperationName() string {
@@ -543,7 +543,7 @@ func (elem *WebRtcEndpoint) CreateDataChannel(ctx context.Context, params *WebRt
 }
 
 type WebRtcEndpointCloseDataChannelParams struct {
-	ChannelId int `json:"ChannelId"`
+	ChannelId int `json:"channelId"`
 }
 
 func (WebRtcEndpointCloseDataChannelParams) OperationName() string {

@@ -24,7 +24,7 @@ type {{ .Name }} struct {
 type {{.Name}}_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	{{ range .Constructor.Params }}{{ .name | title }} {{ prefixType $.Package .type }} `json:"{{ .name }}"`
+	{{ range .Constructor.Params }}{{ .name | title }} {{ prefixType $.Package .type }} `json:"{{ .name }}{{ if .optional }},omitempty{{ end }}"`
 	{{ end }}
 }
 
@@ -47,7 +47,7 @@ func NewMediaPipeline(ctx context.Context, connection *kurento.Client) (*MediaPi
 
 {{ range .Methods }}
 type {{$name}}{{ .Name | title }}Params struct {
-	{{ range $i, $e := .Params }}{{ $e.name | title }} {{ checkElement $.Package $e.type }} `json:"{{ $e.name | title }}"`
+	{{ range $i, $e := .Params }}{{ $e.name | title }} {{ checkElement $.Package $e.type }} `json:"{{ $e.name }}{{ if .optional }},omitempty{{ end }}"`
 	{{ end }}
 }
 

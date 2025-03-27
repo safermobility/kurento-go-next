@@ -30,7 +30,7 @@ func (Hub_builder) GetTypeName() string {
 }
 
 type HubGetGstreamerDotParams struct {
-	Details GstreamerDotDetails `json:"Details"`
+	Details GstreamerDotDetails `json:"details,omitempty"`
 }
 
 func (HubGetGstreamerDotParams) OperationName() string {
@@ -53,7 +53,7 @@ func (elem *Hub) GetGstreamerDot(ctx context.Context, params *HubGetGstreamerDot
 }
 
 type HubDumpGstreamerDotParams struct {
-	Details GstreamerDotDetails `json:"Details"`
+	Details GstreamerDotDetails `json:"details,omitempty"`
 }
 
 func (HubDumpGstreamerDotParams) OperationName() string {

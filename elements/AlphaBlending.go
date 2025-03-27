@@ -31,8 +31,8 @@ func (AlphaBlending_builder) GetTypeName() string {
 }
 
 type AlphaBlendingSetMasterParams struct {
-	Source core.HubPort `json:"Source"`
-	ZOrder int          `json:"ZOrder"`
+	Source core.HubPort `json:"source"`
+	ZOrder int          `json:"zOrder"`
 }
 
 func (AlphaBlendingSetMasterParams) OperationName() string {
@@ -53,12 +53,12 @@ func (elem *AlphaBlending) SetMaster(ctx context.Context, params *AlphaBlendingS
 }
 
 type AlphaBlendingSetPortPropertiesParams struct {
-	RelativeX      float64      `json:"RelativeX"`
-	RelativeY      float64      `json:"RelativeY"`
-	ZOrder         int          `json:"ZOrder"`
-	RelativeWidth  float64      `json:"RelativeWidth"`
-	RelativeHeight float64      `json:"RelativeHeight"`
-	Port           core.HubPort `json:"Port"`
+	RelativeX      float64      `json:"relativeX"`
+	RelativeY      float64      `json:"relativeY"`
+	ZOrder         int          `json:"zOrder"`
+	RelativeWidth  float64      `json:"relativeWidth"`
+	RelativeHeight float64      `json:"relativeHeight"`
+	Port           core.HubPort `json:"port"`
 }
 
 func (AlphaBlendingSetPortPropertiesParams) OperationName() string {

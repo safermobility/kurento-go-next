@@ -66,7 +66,7 @@ func (SdpEndpoint_builder) GetTypeName() string {
 }
 
 type SdpEndpointGenerateOfferParams struct {
-	Options OfferOptions `json:"Options"`
+	Options OfferOptions `json:"options,omitempty"`
 }
 
 func (SdpEndpointGenerateOfferParams) OperationName() string {
@@ -100,7 +100,7 @@ func (elem *SdpEndpoint) GenerateOffer(ctx context.Context, params *SdpEndpointG
 }
 
 type SdpEndpointProcessOfferParams struct {
-	Offer string `json:"Offer"`
+	Offer string `json:"offer"`
 }
 
 func (SdpEndpointProcessOfferParams) OperationName() string {
@@ -140,7 +140,7 @@ func (elem *SdpEndpoint) ProcessOffer(ctx context.Context, params *SdpEndpointPr
 }
 
 type SdpEndpointProcessAnswerParams struct {
-	Answer string `json:"Answer"`
+	Answer string `json:"answer"`
 }
 
 func (SdpEndpointProcessAnswerParams) OperationName() string {

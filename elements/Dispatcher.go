@@ -30,8 +30,8 @@ func (Dispatcher_builder) GetTypeName() string {
 }
 
 type DispatcherConnectParams struct {
-	Source core.HubPort `json:"Source"`
-	Sink   core.HubPort `json:"Sink"`
+	Source core.HubPort `json:"source"`
+	Sink   core.HubPort `json:"sink"`
 }
 
 func (DispatcherConnectParams) OperationName() string {

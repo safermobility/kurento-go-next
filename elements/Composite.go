@@ -16,9 +16,9 @@ type Composite_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	MediaPipeline core.MediaPipeline `json:"mediaPipeline"`
-	Width         int                `json:"width"`
-	Height        int                `json:"height"`
-	Framerate     int                `json:"framerate"`
+	Width         int                `json:"width,omitempty"`
+	Height        int                `json:"height,omitempty"`
+	Framerate     int                `json:"framerate,omitempty"`
 }
 
 func (Composite_builder) GetTypeName() string {

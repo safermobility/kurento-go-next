@@ -78,8 +78,8 @@ type RtpEndpoint_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	MediaPipeline core.MediaPipeline `json:"mediaPipeline"`
-	Crypto        SDES               `json:"crypto"`
-	UseIpv6       bool               `json:"useIpv6"`
+	Crypto        SDES               `json:"crypto,omitempty"`
+	UseIpv6       bool               `json:"useIpv6,omitempty"`
 }
 
 func (RtpEndpoint_builder) GetTypeName() string {

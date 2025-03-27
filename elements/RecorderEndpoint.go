@@ -169,8 +169,8 @@ type RecorderEndpoint_builder struct {
 
 	MediaPipeline     core.MediaPipeline   `json:"mediaPipeline"`
 	Uri               string               `json:"uri"`
-	MediaProfile      MediaProfileSpecType `json:"mediaProfile"`
-	StopOnEndOfStream bool                 `json:"stopOnEndOfStream"`
+	MediaProfile      MediaProfileSpecType `json:"mediaProfile,omitempty"`
+	StopOnEndOfStream bool                 `json:"stopOnEndOfStream,omitempty"`
 }
 
 func (RecorderEndpoint_builder) GetTypeName() string {

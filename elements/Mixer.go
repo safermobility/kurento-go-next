@@ -31,9 +31,9 @@ func (Mixer_builder) GetTypeName() string {
 }
 
 type MixerConnectParams struct {
-	Media  core.MediaType `json:"Media"`
-	Source core.HubPort   `json:"Source"`
-	Sink   core.HubPort   `json:"Sink"`
+	Media  core.MediaType `json:"media"`
+	Source core.HubPort   `json:"source"`
+	Sink   core.HubPort   `json:"sink"`
 }
 
 func (MixerConnectParams) OperationName() string {
@@ -54,9 +54,9 @@ func (elem *Mixer) Connect(ctx context.Context, params *MixerConnectParams) erro
 }
 
 type MixerDisconnectParams struct {
-	Media  core.MediaType `json:"Media"`
-	Source core.HubPort   `json:"Source"`
-	Sink   core.HubPort   `json:"Sink"`
+	Media  core.MediaType `json:"media"`
+	Source core.HubPort   `json:"source"`
+	Sink   core.HubPort   `json:"sink"`
 }
 
 func (MixerDisconnectParams) OperationName() string {

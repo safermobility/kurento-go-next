@@ -44,7 +44,7 @@ func NewMediaPipeline(ctx context.Context, connection *kurento.Client) (*MediaPi
 }
 
 type MediaPipelineGetGstreamerDotParams struct {
-	Details GstreamerDotDetails `json:"Details"`
+	Details GstreamerDotDetails `json:"details,omitempty"`
 }
 
 func (MediaPipelineGetGstreamerDotParams) OperationName() string {
@@ -67,7 +67,7 @@ func (elem *MediaPipeline) GetGstreamerDot(ctx context.Context, params *MediaPip
 }
 
 type MediaPipelineDumpGstreamerDotParams struct {
-	Details GstreamerDotDetails `json:"Details"`
+	Details GstreamerDotDetails `json:"details,omitempty"`
 }
 
 func (MediaPipelineDumpGstreamerDotParams) OperationName() string {

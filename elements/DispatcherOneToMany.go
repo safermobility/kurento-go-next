@@ -31,7 +31,7 @@ func (DispatcherOneToMany_builder) GetTypeName() string {
 }
 
 type DispatcherOneToManySetSourceParams struct {
-	Source core.HubPort `json:"Source"`
+	Source core.HubPort `json:"source"`
 }
 
 func (DispatcherOneToManySetSourceParams) OperationName() string {

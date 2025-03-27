@@ -43,7 +43,7 @@ func (ServerManager_builder) GetTypeName() string {
 }
 
 type ServerManagerGetKmdParams struct {
-	ModuleName string `json:"ModuleName"`
+	ModuleName string `json:"moduleName"`
 }
 
 func (ServerManagerGetKmdParams) OperationName() string {
@@ -106,7 +106,7 @@ func (elem *ServerManager) GetCpuCount(ctx context.Context) (int, error) {
 }
 
 type ServerManagerGetUsedCpuParams struct {
-	Interval int `json:"Interval"`
+	Interval int `json:"interval"`
 }
 
 func (ServerManagerGetUsedCpuParams) OperationName() string {

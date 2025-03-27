@@ -129,8 +129,8 @@ type PlayerEndpoint_builder struct {
 
 	MediaPipeline   core.MediaPipeline `json:"mediaPipeline"`
 	Uri             string             `json:"uri"`
-	UseEncodedMedia bool               `json:"useEncodedMedia"`
-	NetworkCache    int                `json:"networkCache"`
+	UseEncodedMedia bool               `json:"useEncodedMedia,omitempty"`
+	NetworkCache    int                `json:"networkCache,omitempty"`
 }
 
 func (PlayerEndpoint_builder) GetTypeName() string {
