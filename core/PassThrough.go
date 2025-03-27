@@ -13,7 +13,7 @@ type PassThrough struct {
 type PassThrough_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	MediaPipeline MediaPipeline
+	MediaPipeline MediaPipeline `json:"mediaPipeline"`
 }
 
 func (PassThrough_builder) GetTypeName() string {

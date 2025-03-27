@@ -22,7 +22,7 @@ type Dispatcher struct {
 type Dispatcher_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	MediaPipeline core.MediaPipeline
+	MediaPipeline core.MediaPipeline `json:"mediaPipeline"`
 }
 
 func (Dispatcher_builder) GetTypeName() string {

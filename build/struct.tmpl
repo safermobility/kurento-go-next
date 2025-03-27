@@ -24,7 +24,7 @@ type {{ .Name }} struct {
 type {{.Name}}_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	{{ range .Constructor.Params }}{{ .name | title }} {{ prefixType $.Package .type }}
+	{{ range .Constructor.Params }}{{ .name | title }} {{ prefixType $.Package .type }} `json:"{{ .name }}"`
 	{{ end }}
 }
 

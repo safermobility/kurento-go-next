@@ -127,10 +127,10 @@ type PlayerEndpoint struct {
 type PlayerEndpoint_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	MediaPipeline   core.MediaPipeline
-	Uri             string
-	UseEncodedMedia bool
-	NetworkCache    int
+	MediaPipeline   core.MediaPipeline `json:"mediaPipeline"`
+	Uri             string             `json:"uri"`
+	UseEncodedMedia bool               `json:"useEncodedMedia"`
+	NetworkCache    int                `json:"networkCache"`
 }
 
 func (PlayerEndpoint_builder) GetTypeName() string {

@@ -23,7 +23,7 @@ type Mixer struct {
 type Mixer_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	MediaPipeline core.MediaPipeline
+	MediaPipeline core.MediaPipeline `json:"mediaPipeline"`
 }
 
 func (Mixer_builder) GetTypeName() string {

@@ -17,9 +17,9 @@ type HttpPostEndpoint struct {
 type HttpPostEndpoint_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	MediaPipeline        core.MediaPipeline
-	DisconnectionTimeout int
-	UseEncodedMedia      bool
+	MediaPipeline        core.MediaPipeline `json:"mediaPipeline"`
+	DisconnectionTimeout int                `json:"disconnectionTimeout"`
+	UseEncodedMedia      bool               `json:"useEncodedMedia"`
 }
 
 func (HttpPostEndpoint_builder) GetTypeName() string {

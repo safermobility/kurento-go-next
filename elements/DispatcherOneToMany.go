@@ -23,7 +23,7 @@ type DispatcherOneToMany struct {
 type DispatcherOneToMany_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	MediaPipeline core.MediaPipeline
+	MediaPipeline core.MediaPipeline `json:"mediaPipeline"`
 }
 
 func (DispatcherOneToMany_builder) GetTypeName() string {

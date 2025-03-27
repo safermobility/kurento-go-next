@@ -417,12 +417,12 @@ type WebRtcEndpoint struct {
 type WebRtcEndpoint_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	MediaPipeline      core.MediaPipeline
-	Recvonly           bool
-	Sendonly           bool
-	UseDataChannels    bool
-	CertificateKeyType CertificateKeyType
-	QosDscp            DSCPValue
+	MediaPipeline      core.MediaPipeline `json:"mediaPipeline"`
+	Recvonly           bool               `json:"recvonly"`
+	Sendonly           bool               `json:"sendonly"`
+	UseDataChannels    bool               `json:"useDataChannels"`
+	CertificateKeyType CertificateKeyType `json:"certificateKeyType"`
+	QosDscp            DSCPValue          `json:"qosDscp"`
 }
 
 func (WebRtcEndpoint_builder) GetTypeName() string {

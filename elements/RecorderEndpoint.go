@@ -167,10 +167,10 @@ type RecorderEndpoint struct {
 type RecorderEndpoint_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	MediaPipeline     core.MediaPipeline
-	Uri               string
-	MediaProfile      MediaProfileSpecType
-	StopOnEndOfStream bool
+	MediaPipeline     core.MediaPipeline   `json:"mediaPipeline"`
+	Uri               string               `json:"uri"`
+	MediaProfile      MediaProfileSpecType `json:"mediaProfile"`
+	StopOnEndOfStream bool                 `json:"stopOnEndOfStream"`
 }
 
 func (RecorderEndpoint_builder) GetTypeName() string {

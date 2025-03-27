@@ -13,7 +13,7 @@ type HubPort struct {
 type HubPort_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Hub Hub
+	Hub Hub `json:"hub"`
 }
 
 func (HubPort_builder) GetTypeName() string {
