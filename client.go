@@ -24,7 +24,7 @@ type Client struct {
 	SessionID string
 }
 
-func New(url string, logger *log.Logger) (*Client, error) {
+func New(url string, logger *slog.Logger) (*Client, error) {
 	ch, err := wschannel.Dial(url, &wschannel.DialOptions{
 		HTTPClient: &http.Client{
 			Timeout: 5 * time.Second,
@@ -80,6 +80,7 @@ func New(url string, logger *log.Logger) (*Client, error) {
 	return &Client{
 		c,
 		ch,
+		logger,
 		subscribers,
 		"",
 	}, nil
