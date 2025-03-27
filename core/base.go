@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/safermobility/kurento-go-next/v7"
 )
@@ -75,6 +76,11 @@ func (m *MediaObject) setID(id string) {
 
 func (m *MediaObject) String() string {
 	return m.Id
+}
+
+func (m *MediaObject) MarshalJSON() ([]byte, error) {
+	// Kurento needs the ID of the object. Nothing else matters.
+	return json.Marshal(m.Id)
 }
 
 // Create an object in memory that represents a remote object without creating it

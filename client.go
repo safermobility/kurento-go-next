@@ -6,8 +6,9 @@ package kurento
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
+	"runtime"
 	"time"
 
 	"github.com/creachadair/jrpc2"
@@ -17,6 +18,7 @@ import (
 type Client struct {
 	c              *jrpc2.Client
 	ws             *wschannel.Channel
+	logger         *slog.Logger
 	eventListeners *threadsafeSubscriberMap
 
 	SessionID string
@@ -37,7 +39,12 @@ func New(url string, logger *log.Logger) (*Client, error) {
 	}
 
 	clientOpts := &jrpc2.ClientOptions{
-		Logger: jrpc2.StdLogger(logger),
+		Logger: func(text string) {
+			var pcs [1]uintptr
+			runtime.Callers(3, pcs[:]) // skip [Callers, this function, option wrapper]
+			r := slog.NewRecord(time.Now(), slog.LevelInfo, text, pcs[0])
+			_ = logger.Handler().Handle(context.Background(), r)
+		},
 		OnNotify: func(r *jrpc2.Request) {
 			if r.Method() == "onEvent" {
 				var value struct {
@@ -45,12 +52,25 @@ func New(url string, logger *log.Logger) (*Client, error) {
 				}
 				err := r.UnmarshalParams(&value)
 				if err != nil {
-					logger.Printf("error unmarshaling event '%s': '%s'", r.ParamString(), err)
+					logger.LogAttrs(
+						context.Background(),
+						slog.LevelError,
+						"error unmarshaling event",
+						slog.String("payload", r.ParamString()),
+						slog.Any("error", err),
+					)
 					return
 				}
 
 				subscribers.handleEvent(value.Value)
+				return
 			}
+			logger.LogAttrs(
+				context.Background(),
+				slog.LevelDebug,
+				"unrecognized notification",
+				slog.Any("payload", r),
+			)
 		},
 	}
 	c := jrpc2.NewClient(ch, clientOpts)
@@ -94,7 +114,6 @@ func CallSimple[T any](ctx context.Context, c *Client, params Request) (T, error
 }
 
 func (c *Client) Shutdown() {
-	// TODO: What else has to happen here? Do we need to call both of these?
 	c.c.Close()
 	c.ws.Close()
 }
