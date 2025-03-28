@@ -62,7 +62,7 @@ func New(url string, logger *slog.Logger) (*Client, error) {
 					return
 				}
 
-				subscribers.handleEvent(value.Value)
+				go subscribers.handleEvent(value.Value)
 				return
 			}
 			logger.LogAttrs(
