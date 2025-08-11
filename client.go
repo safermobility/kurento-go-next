@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net/http"
 	"runtime"
+	"sync"
 	"time"
 
 	"github.com/creachadair/jrpc2"
@@ -35,7 +36,8 @@ func New(url string, logger *slog.Logger) (*Client, error) {
 	}
 
 	subscribers := &threadsafeSubscriberMap{
-		subscribers: make(map[string]map[string]map[string]EventHandler),
+		subscribers: make(map[string]map[string]EventHandler),
+		locks:       make(map[string]*sync.RWMutex),
 	}
 
 	clientOpts := &jrpc2.ClientOptions{

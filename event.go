@@ -9,8 +9,10 @@ import (
 type EventHandler func(map[string]interface{})
 
 type threadsafeSubscriberMap struct {
-	subscribers map[string]map[string]map[string]EventHandler // eventName -> objectId -> handlerId -> handler.
-	lock        sync.RWMutex
+	subscribers map[string]map[string]EventHandler // eventName+objectId -> handlerId -> handler.
+	// Lock per type+object name
+	locks   map[string]*sync.RWMutex
+	mapLock sync.Mutex
 }
 
 type Event struct {
@@ -19,14 +21,27 @@ type Event struct {
 	Data   map[string]any // TODO: Can we make types for all of these?
 }
 
+func (t *threadsafeSubscriberMap) getLockFor(key string) *sync.RWMutex {
+	t.mapLock.Lock()
+	defer t.mapLock.Unlock()
+
+	if ret, found := t.locks[key]; found {
+		return ret
+	}
+
+	ret := &sync.RWMutex{}
+	t.locks[key] = ret
+	return ret
+}
+
 func (t *threadsafeSubscriberMap) handleEvent(e *Event) {
-	t.lock.RLock()
-	defer t.lock.RUnlock()
-	if eventHandlers, ok := t.subscribers[e.Type]; ok {
-		if objectHandlers, ok := eventHandlers[e.Object]; ok {
-			for _, handler := range objectHandlers {
-				handler(e.Data)
-			}
+	name := e.Type + ":" + e.Object
+	lock := t.getLockFor(name)
+	lock.RLock()
+	defer lock.RUnlock()
+	if eventHandlers, ok := t.subscribers[name]; ok {
+		for _, handler := range eventHandlers {
+			handler(e.Data)
 		}
 	}
 }
@@ -42,11 +57,12 @@ type Subscription struct {
 }
 
 func (c *Client) Subscribe(ctx context.Context, event, objectId string, handler EventHandler) (string, error) {
-	var oh map[string]map[string]EventHandler
 	var ok bool
 
-	c.eventListeners.lock.Lock()
-	defer c.eventListeners.lock.Unlock()
+	name := event + ":" + objectId
+	lock := c.eventListeners.getLockFor(name)
+	lock.Lock()
+	defer lock.Unlock()
 
 	info := &Subscription{
 		EventType: event,
@@ -59,15 +75,10 @@ func (c *Client) Subscribe(ctx context.Context, event, objectId string, handler 
 		return resp.Value, fmt.Errorf("unable to subscribe to event '%s' on '%s': %w", info.EventType, info.ObjectID, err)
 	}
 
-	if oh, ok = c.eventListeners.subscribers[info.EventType]; !ok {
-		c.eventListeners.subscribers[info.EventType] = make(map[string]map[string]EventHandler)
-		oh = c.eventListeners.subscribers[info.EventType]
-	}
-
 	var he map[string]EventHandler
-	if he, ok = oh[info.ObjectID]; !ok {
-		oh[info.ObjectID] = make(map[string]EventHandler)
-		he = oh[info.ObjectID]
+	if he, ok = c.eventListeners.subscribers[name]; !ok {
+		c.eventListeners.subscribers[name] = make(map[string]EventHandler)
+		he = c.eventListeners.subscribers[name]
 	}
 
 	he[resp.Value] = handler
@@ -75,8 +86,10 @@ func (c *Client) Subscribe(ctx context.Context, event, objectId string, handler 
 }
 
 func (c *Client) Unsubscribe(ctx context.Context, event, objectId, handlerId string) error {
-	c.eventListeners.lock.Lock()
-	defer c.eventListeners.lock.Unlock()
+	name := event + ":" + objectId
+	lock := c.eventListeners.getLockFor(name)
+	lock.Lock()
+	defer lock.Unlock()
 
 	info := &Subscription{
 		SubscriptionID: handlerId,
@@ -89,8 +102,8 @@ func (c *Client) Unsubscribe(ctx context.Context, event, objectId, handlerId str
 		return fmt.Errorf("unable to unsubscribe from '%s' on '%s': %w", info.SubscriptionID, info.ObjectID, err)
 	}
 
-	if oh, ok := c.eventListeners.subscribers[event]; ok {
-		delete(oh[objectId], handlerId)
+	if oh, ok := c.eventListeners.subscribers[name]; ok {
+		delete(oh, handlerId)
 	}
 
 	return nil
