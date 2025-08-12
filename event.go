@@ -34,6 +34,13 @@ func (t *threadsafeSubscriberMap) getLockFor(key string) *sync.RWMutex {
 	return ret
 }
 
+func (t *threadsafeSubscriberMap) cleanupLockFor(key string) {
+	t.mapLock.Lock()
+	defer t.mapLock.Unlock()
+
+	delete(t.locks, key)
+}
+
 func (t *threadsafeSubscriberMap) handleEvent(e *Event) {
 	name := e.Type + ":" + e.Object
 	lock := t.getLockFor(name)
@@ -102,8 +109,15 @@ func (c *Client) Unsubscribe(ctx context.Context, event, objectId, handlerId str
 		return fmt.Errorf("unable to unsubscribe from '%s' on '%s': %w", info.SubscriptionID, info.ObjectID, err)
 	}
 
-	if oh, ok := c.eventListeners.subscribers[name]; ok {
+	oh, ok := c.eventListeners.subscribers[name]
+	if ok {
 		delete(oh, handlerId)
+	}
+
+	// If this is the last listener for this type, also delete the lock
+	// to prevent memory leaks
+	if len(oh) == 0 {
+		c.eventListeners.cleanupLockFor(name)
 	}
 
 	return nil
