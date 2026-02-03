@@ -71,7 +71,7 @@ func (m *MediaObject) String() string {
 	return m.Id
 }
 
-func (m *MediaObject) MarshalJSON() ([]byte, error) {
+func (m MediaObject) MarshalJSON() ([]byte, error) {
 	// Kurento needs the ID of the object. Nothing else matters.
 	return json.Marshal(m.Id)
 }
